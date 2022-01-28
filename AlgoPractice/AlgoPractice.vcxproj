@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/std:c++17 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,7 +143,20 @@
     <ClCompile Include="AlgoPractice.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BSTree.h" />
+    <ClInclude Include="BTreeLevelOrderTrv-BFS.h" />
+    <ClInclude Include="CombsAndPermuts.h" />
+    <ClInclude Include="CyclicSort.h" />
+    <ClInclude Include="FastNSlowPointer.h" />
+    <ClInclude Include="BTreeDFS.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="InplaceLinkListReversal.h" />
+    <ClInclude Include="IntervalsScheduling.h" />
+    <ClInclude Include="MedianOfStream.h" />
+    <ClInclude Include="NumberTheory.h" />
     <ClInclude Include="SlidingWindow.h" />
+    <ClInclude Include="Sorting.h" />
+    <ClInclude Include="TwoPointers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
