@@ -17,7 +17,6 @@ using namespace std;
 
 #include "Helpers.h"
 /*#include "SlidingWindow.h"
-#include "CombsAndPermuts.h"
 #include "Sorting.h"
 #include "TwoPointers.h"
 #include "FastNSlowPointer.h"
@@ -26,13 +25,16 @@ using namespace std;
 #include "InplaceLinkListReversal.h"
 #include "BTreeDFS.h"
 #include "BTreeLevelOrderTrv-BFS.h"
-#include "CyclicSort.h"*/
+#include "CyclicSort.h"
 #include "MedianOfStream.h"
+#include "CombsAndPermuts.h"*/
+#include "Subsets.h"
+#include "MISC.h"
+#include "BSearch.h"
 
 int main()
 {
     /*testSlidingWindow();
-    CombsAndPermuts();
     testSorting();
     testTwoPointers();
     testFastSlowPointers();
@@ -41,7 +43,11 @@ int main()
     testInplaceLinkedListReversal();
     testBTree();
     BTreeLevelOrderTrv_BFS();
-    testCyclicSort();*/
+    testCyclicSort();
     testStreamMedian();
+    CombsAndPermuts();
+    testSubsets();*/
+    //testMISC();
+    testBSearch();
     return 0;
 }

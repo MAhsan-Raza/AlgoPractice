@@ -143,6 +143,7 @@
     <ClCompile Include="AlgoPractice.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BSearch.h" />
     <ClInclude Include="BSTree.h" />
     <ClInclude Include="BTreeLevelOrderTrv-BFS.h" />
     <ClInclude Include="CombsAndPermuts.h" />
@@ -153,9 +154,11 @@
     <ClInclude Include="InplaceLinkListReversal.h" />
     <ClInclude Include="IntervalsScheduling.h" />
     <ClInclude Include="MedianOfStream.h" />
+    <ClInclude Include="MISC.h" />
     <ClInclude Include="NumberTheory.h" />
     <ClInclude Include="SlidingWindow.h" />
     <ClInclude Include="Sorting.h" />
+    <ClInclude Include="Subsets.h" />
     <ClInclude Include="TwoPointers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

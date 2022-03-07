@@ -65,5 +65,14 @@
     <ClInclude Include="MedianOfStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Subsets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MISC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BSearch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
