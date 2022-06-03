@@ -153,7 +153,7 @@ int UnknownSize_BinarySearch(const ArrayReader& infNums, const int target)
     return -1;
 }
 
-
+// NOT WORKING ALGO ------>>>>>> WRONG ALGO
 int CeilingOfNumber(const vector<int>& nums, const int target)
 {
     if (nums.empty())		    return -1;
@@ -215,14 +215,18 @@ char GetNextLetterCircular(const vector<char>& ltrs, const char key)
     return ltrs[right];
 }
 
+//If found exact match return it ELSE find floor & ceiling
 void FloorAndCeiling(const vector<int>& arr, const int target, int& floor, int& ceil)
 {
+    if (arr.empty()) { floor = ceil = -1; return; }
+
     int left = 0;
     int right = arr.size() - 1;
+    int mid = 0;
 
-    while (left < right)
+    while (left <= right)
     {
-        int mid = left + (right - left) / 2;
+        mid = left + (right - left) / 2;
         if (arr[mid] > target)
         {
             right = mid - 1;
@@ -238,21 +242,17 @@ void FloorAndCeiling(const vector<int>& arr, const int target, int& floor, int& 
         }
     }
 
-    // here left must == right
-    if (target == arr[left])
+    if (target < arr[mid])
     {
-        floor = ceil = target;
+        ceil = arr[mid];
+        floor = mid > 0 ? arr[mid - 1] : -1;
     }
-    else if (target < arr[left])
+    else if(target > arr[mid])
     {
-        ceil = arr[left];
-        floor = left > 0 ? arr[left - 1] : -1;
+        ceil = mid < arr.size() - 1 ? arr[mid + 1] : -1;
+        floor = arr[mid];
     }
-    else    // target > arr[left]
-    {
-        ceil = left < arr.size() - 1 ? arr[left + 1] : -1;
-        floor = arr[left];
-    }
+    //“ == ” case was handled in above while
 }
 
 void FloorAndCeiling_UnSortedArry(const vector<int>& arr, const int target, int& floor, int& ceil)
@@ -278,6 +278,7 @@ void FloorAndCeiling_UnSortedArry(const vector<int>& arr, const int target, int&
     }
 }
 
+// This will achive O(log N) time while prev algo was O(N)
 int BinarySearchNearest(const vector<int>& arr, const int target)
 {
     int left = 0;
@@ -315,6 +316,112 @@ pair<int, int> GetRange_BinarySearch(const vector<int>& arr, const int target)
         res.second = high - 1;
 
     return res;
+}
+
+void GetFloorCeilIdex_WithDUPS(const vector<int>& nums, const int target, int& floor, int& ceil)
+{
+    floor = ceil = -1;
+    if (nums.empty()) return;
+
+    auto OnResultEqual = [&](const bool GetFloor, const int tmid, int& left, int& right) -> bool
+    {
+
+        if (GetFloor)
+        {
+            if (tmid == nums.size() - 1 || nums[tmid + 1] >= target)
+                return true;
+            else
+                left = tmid + 1;
+        }
+        else
+        {
+            if (tmid > 0 && nums[tmid - 1] <= target)
+                return true;
+            else
+                right = tmid - 1;
+        }
+        return false;
+    };
+
+    auto GetTargetBound = [&](const bool GetFloor, int left, int right) -> int
+    {
+        int mid = -1;
+        while (left <= right)
+        {
+            mid = left + (right - left) / 2;
+
+            if (GetFloor)
+            {
+                if (nums[mid] >= target)
+                    right = mid - 1;
+                else if (OnResultEqual(GetFloor, mid, left, right))
+                    break;
+            }
+            else
+            {
+                if (nums[mid] <= target)
+                    left = mid + 1;
+                else if (OnResultEqual(GetFloor, mid, left, right))
+                    break;
+            }
+        }
+        return mid;
+    };
+
+    floor = GetTargetBound(true, 0, nums.size() - 1);    
+    ceil = GetTargetBound(false, 0, nums.size() - 1);
+
+    floor = floor == 0 && target <= nums.front() ? -1 : floor;
+    ceil = ceil == nums.size() - 1 && target >= nums.back() ? -1 : ceil;
+}
+
+pair<int, int> GetRange_BinarySearch_WithDUPS(const vector<int>& nums, const int target)
+{
+    int ceil, floor;
+    auto rez = make_pair<int, int>(-1, -1);
+    if (nums.empty())    return rez;
+
+    GetFloorCeilIdex_WithDUPS(nums, target, floor, ceil);
+
+    if (floor < int(nums.size())-1 && nums[floor + 1] == target)
+    {
+        rez.first = floor + 1;
+
+        rez.second = ((ceil == -1)) ? nums.size() - 1 : ceil - 1;
+    }
+
+    return rez;
+}
+
+//This will not work if we needed to return INDEX instead of actual value (b/c of DUPS)
+char nextGreatestLetter(vector<char>& letters, char target)
+{
+    int left = 0;
+    int right = letters.size() - 1;
+    int mid = -1;
+    ++target;
+
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+
+        if (letters[mid] > target)
+            right = mid - 1;
+        else if (letters[mid] < target)
+            left = mid + 1;
+        else
+            break;
+    }
+
+    if (target <= letters[mid])
+        return letters[mid];
+    else
+    {
+        if (mid >= letters.size() - 1)
+            return letters.front();
+        else
+            return letters[mid + 1];
+    }
 }
 
 /*vector<int> searchRange(vector<int>& nums, int target)
@@ -356,6 +463,7 @@ int BSearch(const vector<int>& nums, const int target)
 
 using namespace std::placeholders;
 
+// OLD CODE
 class Solution
 {
     using EnDirection = enum class ENDIRC
@@ -369,12 +477,14 @@ class Solution
 
 public:
 
+    // OLD CODE
     int peakIndexInMountainArray(const vector<int>& arr)
     {
         return this->FindPeekInternal(arr, std::bind(&Solution::GetDirectionInMountain,
             this, std::placeholders::_1, std::placeholders::_2));
     }
 
+    // OLD CODE
     int findPeakElement(const vector<int>& arr)
     {
         if (arr.empty() || 1 == arr.size())        return 0;
@@ -466,7 +576,7 @@ private:
 };
 
 //no vector
-int peakIndexInMountainArray(MountainArray& mountainArr)
+/*int peakIndexInMountainArray(MountainArray& mountainArr)
 {}
 
 int OrderAgnostic_BinarySearch(int target, MountainArray& mountainArr)
@@ -487,9 +597,218 @@ int findInMountainArray(int target, MountainArray& mountainArr)
             return binSearch(left, mid - 1);
     };
 
-    /*int peek = this->
+    int peek = this->
 
-        return -1;*/
+        return -1;
+}*/
+
+int GetNearestValue(const vector<int>& arr, const int target)
+{
+    if (arr.empty())     return -1;
+
+    int left = 0;
+    int right = arr.size() - 1;
+    int mid = 0;
+
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+
+        if (arr[mid] < target)
+            left = mid + 1;
+        else if (arr[mid] > target)
+            right = mid - 1;
+        else
+            return arr[mid];
+    }
+
+    int ceil = 0;
+    int floor = 0;
+    if (arr[mid] > target)
+    {
+        ceil = arr[mid];
+        floor = (mid == 0) ? -1 : arr[mid - 1];
+    }
+    else
+    {
+        ceil = (mid == arr.size() - 1) ? -1 : arr[mid + 1];
+        floor = arr[mid];
+    }
+
+    if (floor == -1)     return ceil;
+    if (ceil == -1)      return floor;
+
+    if (target - floor < ceil - target)
+        return floor;
+    else return ceil;
+}
+
+int SearchInSortedRotatedArray(const vector<int>& nums, const int target)
+{
+    int rez = -1;
+    if (nums.empty()) return rez;
+
+    auto GetRtdPeek = [&]() -> int
+    {
+        int rleft = 0;
+        int rright = nums.size() - 1;
+        int mid = 0;
+
+        while (rleft <= rright)
+        {
+            mid = rleft + (rright - rleft) / 2;
+
+            if (nums[mid] < nums.front())
+                rright = mid - 1;
+            else
+            {
+                if (mid == nums.size() - 1 || nums[mid] > nums[mid + 1])
+                    break;
+                if (nums[rleft] > nums[rleft + 1])
+                    return rleft;
+                
+                if (nums[mid] == nums[rleft] && nums[mid] == nums[rright])
+                {
+                    ++rleft;    --rright;
+                }
+                else   rleft = mid + 1;
+            }
+        }
+
+        return mid;
+    };
+
+    std::function<int(const int,const int)> BSrchEx = [&](const int left, const int right)->int 
+    {
+        if (left > right)
+            return -1;
+
+        int mid = left + (right - left) / 2;
+        
+        if (nums[mid] < target)
+            return BSrchEx(mid + 1, right);
+        else if (nums[mid] > target)
+            return BSrchEx(left, mid - 1);
+        else
+            return mid;
+    };
+
+    int pkIndx = GetRtdPeek();
+    if ((rez = BSrchEx(0, pkIndx)) != -1)
+        return rez;
+
+    return BSrchEx(pkIndx+1, nums.size()-1);
+}
+
+int search_NODUP(const vector<int>& nums, int target) {
+
+    auto GetRtdPeek = [&]()->int
+    {
+        int rleft = 0;
+        int rright = nums.size() - 1;
+        int mid = 0;
+
+        while (rleft <= rright)
+        {
+            mid = rleft + (rright - rleft) / 2;
+
+            if (nums[mid] < nums.front())    //mid has crossed the PEEK
+                rright = mid - 1;
+            else
+            {
+                if (mid == nums.size() - 1 || nums[mid + 1] < nums[mid])
+                    break;
+                else
+                    rleft = mid + 1;
+            }
+        }
+
+        return mid;
+    };
+
+    std::function<int(const int, const int)> BSrchEx = [&](const int left, const int right)->int
+    {
+        if (left > right)    return -1;
+        int mid = left + (right - left) / 2;
+
+        if (nums[mid] > target)
+            return BSrchEx(left, mid - 1);
+        else if (nums[mid] < target)
+            return BSrchEx(mid + 1, right);
+
+        return mid;
+    };
+
+    if (nums.empty()) return -1;
+
+    int peek = GetRtdPeek();
+
+    int rez = BSrchEx(0, peek);
+    if (rez == -1)
+        rez = BSrchEx(peek + 1, nums.size() - 1);
+    return rez;
+}
+
+
+bool search(const vector<int>& nums, int target)
+{
+    bool rez = false;
+    if (nums.empty())    return rez;
+
+    auto GetRtnPeekDup = [&]()->int
+    {
+        int rl = 0;
+        int rr = nums.size() - 1;
+        int mid = 0;
+
+        while (rl <= rr)
+        {
+            mid = rl + (rr - rl) / 2;
+
+            if (nums[mid] < nums.front())
+                rr = mid - 1;
+            else
+            {
+                if (mid == nums.size() - 1 || nums[mid] > nums[mid + 1])
+                    break;
+                else
+                {
+                    if (nums[mid] == nums.front() && nums[mid] == nums.back())
+                    {
+                        if (nums[rl] > nums[rl + 1])
+                            break;
+
+                        ++rl;   --rr;
+                    }
+                    else
+                        rl = mid + 1;
+                }
+            }
+        }
+
+        return mid;
+    };
+
+    std::function<bool(int, int)> BSrchEx = [&](const int left, const int right)->bool
+    {
+        if (left > right)    return false;
+
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > target)
+            return BSrchEx(left, mid - 1);
+        else if (nums[mid] < target)
+            return BSrchEx(mid + 1, right);
+
+        return true;
+    };
+
+    int peek = GetRtnPeekDup();
+
+    rez = BSrchEx(0, peek);
+    if (rez == false)
+        rez = BSrchEx(peek + 1, nums.size() - 1);
+
+    return rez;
 }
 
 void testBSearch()
@@ -509,16 +828,6 @@ void testBSearch()
     cout << endl << CeilingOfNumber({ 1, 3, 8, 10, 15 }, 12);
     cout << endl << CeilingOfNumber({ 4, 6, 10 }, 17);
     cout << endl << CeilingOfNumber({ 4, 6, 10 }, -1);
-
-    int ceil = 0;
-    int floor = 0;
-    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 0, floor, ceil);
-    floor = ceil = 0;
-    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 1, floor, ceil);
-    floor = ceil = 0;
-    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 5, floor, ceil);
-    floor = ceil = 0;
-    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 20, floor, ceil);
 
     int ceil = 0;
     int floor = 0;
@@ -542,5 +851,81 @@ void testBSearch()
     PeekInArray().peakIndexInMountainArray({ 0, 2, 1, 0 });
     PeekInArray().peakIndexInMountainArray({ 3, 8, 3, 1 });
     PeekInArray().peakIndexInMountainArray({ 18, 29, 38, 59, 98, 100, 99, 98, 90 });
-    Solution().findPeakElement({ 1,2,1,3,5,6,4 });*/
+    Solution().findPeakElement({ 1,2,1,3,5,6,4 });
+
+
+    int ceil = 0;
+    int floor = 0;
+    FloorAndCeiling({1, 2, 8, 10, 10, 12, 19}, 0, floor, ceil);
+    floor = ceil = 0;
+    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 1, floor, ceil);
+    floor = ceil = 0;
+    FloorAndCeiling({ 1, 2, 6, 8, 10, 10, 12, 19 }, 5, floor, ceil);
+    floor = ceil = 0;
+    FloorAndCeiling({ 1, 2, 8, 10, 10, 12, 19 }, 20, floor, ceil);
+    FloorAndCeiling({ 1 }, 0, floor, ceil);
+    floor = ceil = 0;
+    FloorAndCeiling({ 1 }, 1, floor, ceil);
+    floor = ceil = 0;
+    FloorAndCeiling({ 1 }, 2, floor, ceil);
+    floor = ceil = 0;
+
+    cout << GetNearestValue({ 1, 2, 8, 10, 10, 12, 19 }, 11) << endl;
+    cout << GetNearestValue({ 1, 2, 8, 10, 10, 12, 19 }, 13) << endl;
+    cout << GetNearestValue({ 1, 2, 8, 10, 10, 12, 19 }, 0) << endl;
+    cout << GetNearestValue({ 1, 2, 8, 10, 10, 12, 19 }, 200) << endl;
+    cout << GetNearestValue({ 1, 4, 7, 8, 10, 10, 12, 19 }, 5) << endl;
+    cout << GetNearestValue({ 1, 2, 7, 8, 10, 10, 12, 19 }, 6) << endl;
+
+    cout << SearchInSortedRotatedArray({ 45, 100, 1, 3, 4, 8, 11, 20, 22 }, 11) << endl;
+    cout << SearchInSortedRotatedArray({45, 100, 1, 3, 4, 8, 11, 20, 22}, 45) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 1, 3, 4, 8, 11, 20, 22 }, 100) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 1, 3, 4, 8, 11, 20, 22 }, 1) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 1, 3, 4, 8, 11, 20, 22 }, 20) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 4, 4, 4, 0, 4, 4, 4, 4 }, 0) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 4, 4, 4, 0, 4, 4, 4, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 4, 4, 0, 4, 4, 4, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 4, 4, 4, 4, 0, 4, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 4, 4, 4, 4, 4, 0, 4, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 4, 4, 4, 4, 4, 4, 4, 0 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 4, 4, 4, 4, 4, 4, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 45, 100, 1, 1, 10 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 1, 0, }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 0, }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 0, 1 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 0, 1, 2, 3, 4 }, 4) << endl;
+    cout << SearchInSortedRotatedArray({ 0, 1, 2, 3, 4, 5 }, 4) << endl;
+
+    cout << SearchInSortedRotatedArray({ 1,1,1,1,1,1,1,1,1,13,1,1,1,1,1,1,1,1,1,1,1,1 }, 13);
+
+    //GetRange_BinarySearch_WithDUPS({ 1,2,3,3,3,4,4,4,4,7,7,7,7,9,10 }, 7);
+
+
+    int ceil, floor;
+    GetFloorCeilIdex_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 0, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 1, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1, 2, 6, 8, 10, 10, 12, 19 }, 5, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 20, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1 }, 0, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1 }, 1, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1 }, 2, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 4, 6, 6, 6, 9 }, 6, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1, 3, 8, 10, 15 }, 10, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1, 3, 8, 10, 15 }, 12, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 2, 2 }, 2, floor, ceil);
+    GetFloorCeilIdex_WithDUPS({ 1,2,3,3,3,4,4,4,4,7,7,7,7,9,10 }, 7, floor, ceil);*/
+
+
+    GetRange_BinarySearch_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 0);
+    GetRange_BinarySearch_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 10);
+    GetRange_BinarySearch_WithDUPS({ 1, 2, 6, 8, 10, 10, 12, 19 }, 5);
+    GetRange_BinarySearch_WithDUPS({ 1, 2, 8, 10, 10, 12, 19 }, 20);
+    GetRange_BinarySearch_WithDUPS({ 1 }, 0);
+    GetRange_BinarySearch_WithDUPS({ 1 }, 1);
+    GetRange_BinarySearch_WithDUPS({ 1 }, 2);
+    GetRange_BinarySearch_WithDUPS({ 4, 6, 6, 6, 9 }, 6);
+    GetRange_BinarySearch_WithDUPS({ 1, 3, 8, 10, 15 }, 10);
+    GetRange_BinarySearch_WithDUPS({ 1, 3, 8, 10, 15 }, 12);
+    GetRange_BinarySearch_WithDUPS({ 2, 2 }, 2);
+    GetRange_BinarySearch_WithDUPS({ 1,2,3,3,3,4,4,4,4,7,7,7,7,9,10 }, 7);
 }

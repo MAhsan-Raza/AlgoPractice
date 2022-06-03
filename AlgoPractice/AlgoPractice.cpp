@@ -31,6 +31,7 @@ using namespace std;
 #include "Subsets.h"
 #include "MISC.h"
 #include "BSearch.h"
+#include "TopKNums_Heap.h"
 
 int main()
 {
@@ -46,8 +47,9 @@ int main()
     testCyclicSort();
     testStreamMedian();
     CombsAndPermuts();
-    testSubsets();*/
-    //testMISC();
-    testBSearch();
+    testSubsets();
+    testMISC();
+    testBSearch();*/
+    testTopKNums_Heap();
     return 0;
 }
