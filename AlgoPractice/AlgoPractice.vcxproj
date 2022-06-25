@@ -148,11 +148,13 @@
     <ClInclude Include="BTreeLevelOrderTrv-BFS.h" />
     <ClInclude Include="CombsAndPermuts.h" />
     <ClInclude Include="CyclicSort.h" />
+    <ClInclude Include="DivideAndConquer.h" />
     <ClInclude Include="FastNSlowPointer.h" />
     <ClInclude Include="BTreeDFS.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="InplaceLinkListReversal.h" />
     <ClInclude Include="IntervalsScheduling.h" />
+    <ClInclude Include="KSortedLists.h" />
     <ClInclude Include="MedianOfStream.h" />
     <ClInclude Include="MISC.h" />
     <ClInclude Include="NumberTheory.h" />

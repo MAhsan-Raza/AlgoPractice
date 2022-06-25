@@ -74,5 +74,14 @@
     <ClInclude Include="BSearch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TopKNums_Heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KSortedLists.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DivideAndConquer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

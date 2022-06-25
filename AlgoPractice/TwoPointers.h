@@ -193,6 +193,60 @@ int TripleSumCloseToTarget(const vector<int>& arr, const int target)
     return minCloseSum;
 }
 
+// WRONG APPROACH & WRONG RESULT
+bool ConsecutiveSubsequencesOfThree(vector<int>& nums)
+{
+    unordered_set<int> hSet;
+
+    auto TryGetCSeq = [&](const int i)->bool
+    {
+        int counter = 1;
+        int prev = nums[i];
+        int first = nums[i];
+        nums[i] = -1;
+
+        for (int j = i + 1; j < nums.size(); j++)
+        {
+            if (nums[j] == -1)    continue;
+
+            int diff = nums[j] - prev;
+            if (diff == 1)
+            {
+                prev = nums[j];
+                nums[j] = -1;
+                if (++counter == 3)
+                {
+                    if (hSet.find(prev) == hSet.end())
+                        hSet.insert(prev);
+                    break;
+                }
+            }
+            else if (diff > 1) break;
+        }
+
+        if(counter != 3)
+        { 
+            if (hSet.find(first - 1) != hSet.end())
+            {
+                hSet.erase(first - 1);
+                hSet.insert(prev);
+            }
+            else return false;
+        }
+
+        return true;
+    };
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (nums[i] == -1)                continue;
+
+        if (false == TryGetCSeq(i))  return false;
+    }
+
+    return true;
+}
+
 void testTwoPointers()
 {
     /*auto x = TargetSumTwoPtr({1, 2, 3, 4, 7}, 6);
@@ -212,6 +266,15 @@ void testTwoPointers()
     TripleSumCloseToTarget({ 2, 4, 6, 8, 14 }, 7);
     TripleSumCloseToTarget({ 1, 4, 6, 8, 14 }, 500);
     TripleSumCloseToTarget({ 1, 4, 6, 8, 14 }, 22);
-    TripleSumCloseToTarget({ 1, 2, 3, 4, 14 }, 12);*/
+    TripleSumCloseToTarget({ 1, 2, 3, 4, 14 }, 12);
     TripleSumCloseToTarget({ -2,0,1,2 }, 2);
+
+    vector<int> arr = { 1,2,3,3,4,5 };
+    ConsecutiveSubsequencesOfThree(arr);
+    arr = { 1,2,3,3,4,4,5,5 };
+    ConsecutiveSubsequencesOfThree(arr);
+    arr = { 1,2,3,4,4,5 };
+    ConsecutiveSubsequencesOfThree(arr);
+    arr = { 1,2,3,4,6,7,8,9,10,11 };
+    ConsecutiveSubsequencesOfThree(arr);*/
 }

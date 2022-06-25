@@ -12,6 +12,7 @@
 #include<queue>
 #include<unordered_set>
 #include<queue>
+#include<unordered_map>
 
 using namespace std;
 
@@ -27,11 +28,13 @@ using namespace std;
 #include "BTreeLevelOrderTrv-BFS.h"
 #include "CyclicSort.h"
 #include "MedianOfStream.h"
-#include "CombsAndPermuts.h"*/
+#include "CombsAndPermuts.h"
 #include "Subsets.h"
 #include "MISC.h"
 #include "BSearch.h"
-#include "TopKNums_Heap.h"
+#include "TopKNums_Heap.h"*/
+#include "KSortedLists.h"
+#include "DivideAndConquer.h"
 
 int main()
 {
@@ -49,7 +52,9 @@ int main()
     CombsAndPermuts();
     testSubsets();
     testMISC();
-    testBSearch();*/
-    testTopKNums_Heap();
+    testBSearch();
+    testTopKNums_Heap();*/
+    testKSortedLists();
+    testDivideAndConquer();
     return 0;
 }
