@@ -17,8 +17,8 @@
 using namespace std;
 
 #include "Helpers.h"
-/*#include "SlidingWindow.h"
-#include "Sorting.h"
+#include "SlidingWindow.h"
+/*#include "Sorting.h"
 #include "TwoPointers.h"
 #include "FastNSlowPointer.h"
 #include "NumberTheory.h"
@@ -32,14 +32,14 @@ using namespace std;
 #include "Subsets.h"
 #include "MISC.h"
 #include "BSearch.h"
-#include "TopKNums_Heap.h"*/
+#include "TopKNums_Heap.h"
 #include "KSortedLists.h"
-#include "DivideAndConquer.h"
+#include "DivideAndConquer.h"*/
 
 int main()
 {
-    /*testSlidingWindow();
-    testSorting();
+    testSlidingWindow();
+    /*testSorting();
     testTwoPointers();
     testFastSlowPointers();
     testNumberTheory();
@@ -53,8 +53,8 @@ int main()
     testSubsets();
     testMISC();
     testBSearch();
-    testTopKNums_Heap();*/
+    testTopKNums_Heap();
     testKSortedLists();
-    testDivideAndConquer();
+    testDivideAndConquer();*/
     return 0;
 }

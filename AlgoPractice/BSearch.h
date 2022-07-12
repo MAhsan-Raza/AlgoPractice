@@ -811,6 +811,29 @@ bool search(const vector<int>& nums, int target)
     return rez;
 }
 
+int peakIndexInMountainArray(vector<int>& arr)
+{
+    int left = 0;
+    int right = arr.size() - 1;
+
+    while (left <= right)
+    {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid + 1] > arr[mid])
+            left = mid + 1;
+        else
+        {
+            if (mid > 0 && arr[mid] > arr[mid - 1])
+                return mid;
+            else
+                right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
 void testBSearch()
 {
 	/*vector<int> x = { 1,2,3,4,5,6,7,8,10 };
