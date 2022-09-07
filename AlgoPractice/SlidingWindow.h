@@ -273,8 +273,27 @@ int maxSubStrDistinctCharsDoubleLoop(const string& str)
 
 	return res;
 }
+int lengthOfLongestSubstring(const string& str)
+{
+	int res = 0, wStart = 0, wEnd = 0;
+	unordered_map<char, int> ht;
 
-int maxSubStrDistinctChars(const string& str)
+	for (; wEnd < str.size(); wEnd++)
+	{
+		unordered_map<char, int>::const_iterator itr = ht.find(str[wEnd]);
+		if (itr != ht.end())
+		{
+			if (itr->second >= wStart)
+				wStart = itr->second + 1;
+			ht.erase(itr);
+		}
+
+		ht.emplace(str[wEnd], wEnd);
+		res = max(res, wEnd - wStart + 1);
+	}
+	return res;
+}
+/*int maxSubStrDistinctChars(const string& str)
 {
 	int wStart = 0, wEnd = 0, res = 0;
 	unordered_set<char> ht;
@@ -295,7 +314,7 @@ int maxSubStrDistinctChars(const string& str)
 	}
 
 	return max(res, wEnd - wStart);
-}
+}*/
 
 int minSubArrayLenDOUBLELOOP(int target, const vector<int>& nums)
 {
@@ -344,11 +363,18 @@ int minSubArrayLen(const int k, const vector<int>& arr)
 
 int LargestSubstringWithSameCharacters(const string& str)
 {
-	int res = 0;
-	int wStart = 0;
-	int wEnd = 0;
+	int res = 0, wStart = 0, wEnd = 0;
 
-	while(wEnd < str.size())
+	for (; wEnd < str.size(); wEnd++)
+	{
+		if (str[wStart] != str[wEnd])
+		{
+			res = max(res, wEnd - wStart);
+			wStart = wEnd;
+		}
+	}
+	return max(res, wEnd - wStart);
+	/*while (wEnd < str.size())
 	{
 		if (str[wStart] == str[wEnd])
 		{
@@ -362,7 +388,7 @@ int LargestSubstringWithSameCharacters(const string& str)
 
 	}
 
-	return max(res, wEnd - wStart);
+	return max(res, wEnd - wStart);*/
 }
 
 // This is O( N*N ) when K is nearer to N

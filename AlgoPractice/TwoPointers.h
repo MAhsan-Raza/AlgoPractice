@@ -22,7 +22,7 @@ pair<int, int> TargetSumTwoPtr(const vector<int>& arr, int targetSum)
 
 int RemoveDuplicates(vector<int>& arr)
 {
-    int KhaliPlot = 1;
+    /*int KhaliPlot = 1;
 
     for (size_t i = 2; i < arr.size(); i++)
     {
@@ -34,7 +34,19 @@ int RemoveDuplicates(vector<int>& arr)
         }
     }
 
-    return KhaliPlot;
+    return KhaliPlot;*/
+
+    int p1 = 1, p2 = 1;
+
+    for (; p2 < arr.size(); p2++)
+    {
+        if (arr[p2] == arr[p2 - 1])
+            continue;
+
+        arr[p1++] = arr[p2];
+    }
+
+    return p1;
 }
 
 vector<int> SquareOfSortedArray(const vector<int>& arr)
@@ -247,14 +259,413 @@ bool ConsecutiveSubsequencesOfThree(vector<int>& nums)
     return true;
 }
 
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& nums)
+    {
+        if (nums.empty())    return nums;
+        vector<int> res;
+        res.reserve(nums.size());
+
+        auto GetStrtIndx = [&nums]()->int {
+            int i = 0;
+            while (i < nums.size() && nums[i] <= 0)    ++i;
+            return i - 1;
+        };
+
+        auto MakeAMove = [&nums, &res](int& li, int& ri)->int {
+            if (li >= 0 && ri < nums.size())
+            {
+                return std::abs(nums[li]) < std::abs(nums[ri]) ? li-- : ri++;
+            }
+            else if (li >= 0)
+                return li--;
+            else if (ri < nums.size())
+                return ri++;
+
+            return -1;
+        };
+
+        int lItr, rItr, selIndx;
+        lItr = rItr = GetStrtIndx();
+
+        while ((selIndx = MakeAMove(lItr, rItr)) != -1)
+        {
+            res.push_back(std::pow(nums[selIndx], 2));
+        }
+        return std::move(res);
+    }
+};
+
+// solving using sorting & 2pointer approach
+/*inline vector<vector<int>> threeSumToZero(vector<int>& nums)
+{
+    vector<vector<int>> res;
+    if (nums.empty())    return res;
+    const int Target = 0;
+    vector<bool> SkipList(nums.size(), false);
+
+    auto TwoSum = [&nums, &SkipList](const int SubTarget, const int actualLeft, vector<int>& resLine) {
+        int left = 0, right = nums.size() - 1;
+
+        while (left < right)
+        {
+            if (left == actualLeft)
+            {
+                ++left;
+                continue;
+            }
+            else if (right == actualLeft)
+            {
+                --right;
+                continue;
+            }
+
+            const int SubSum = nums[left] + nums[right];
+            if (SubSum == SubTarget)
+            {
+                SkipList[left] = SkipList[right] = true;
+                resLine.push_back(nums[left]);
+                resLine.push_back(nums[right]);
+                return;
+            }
+            else if (SubSum > SubTarget)
+                --right;
+            else
+                ++left;
+        }
+    };
+
+    std::sort(nums.begin(), nums.end());
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (SkipList[i])     continue;
+        if(i > 0 && nums[i] == nums[i-1])   continue;
+
+        const int SubTarget = Target - nums[i];
+        vector<int> resLine;
+        TwoSum(SubTarget, i, resLine);
+        if (resLine.size() == 2)
+        {
+            resLine.push_back(nums[i]);
+            res.emplace_back(resLine);
+        }
+    }
+
+    return res;
+}*/
+
+inline vector<vector<int>> threeSumToZero(vector<int>& nums)
+{
+    const int Target = 0;
+    vector<vector<int>> res;
+    sort(nums.begin(), nums.end());
+    int left, right;
+
+    for (int i = 0; i < nums.size() - 2; i++)
+    {
+        if (i > 0 && nums[i] == nums[i - 1])   continue;
+
+        const int SubTarget = Target - nums[i];
+
+        left = i + 1;
+        right = nums.size() - 1;
+
+        while (left < right)
+        {
+            const int TwoSum = nums[left] + nums[right];
+            if (TwoSum < SubTarget)
+                ++left;
+            else if (TwoSum > SubTarget)
+                --right;
+            else
+            {
+                res.push_back({ nums[i], nums[left], nums[right] });
+                ++left; --right;
+            }
+
+            while (left < right && nums[left] == nums[left + 1])
+                ++left;
+            while (right > left && nums[right] == nums[right - 1])
+                --right;
+        }
+    }
+
+    return move(res);
+}
+
+int threeSumClosest(vector<int>& nums, int target) 
+{
+    int left, right;
+    int minSum = INT_MAX, minDist = INT_MAX;
+    sort(nums.begin(), nums.end());
+
+    for (int i = 0; i < nums.size() - 2; i++)
+    {
+        const int SubTar = target - nums[i];
+        left = i + 1;
+        right = nums.size() - 1;
+
+        while (left < right)
+        {
+            const int TSum = nums[left] + nums[right];
+            const int TripleSum = nums[i] + TSum;
+            const int TDist = abs(target - TripleSum);
+            if (TDist < minDist)
+            {
+                minDist = TDist;
+                minSum = TripleSum;
+            }
+            else if (TDist == minDist)
+                minSum = min(minSum, TripleSum);
+
+            if (TSum > SubTar)
+                --right;
+            else if (TSum < SubTar)
+                ++left;
+            else return target;
+        }
+    }
+    return minSum;
+}
+
+int MaxTwoSumSamallerThanTarget(vector<int>& nums, int target)
+{
+    int maxSum = -1;
+    sort(nums.begin(), nums.end());
+
+    int left = 0;
+    int right = nums.size() - 1;
+
+    while (left < right)
+    {
+        const int TSum = nums[left] + nums[right];
+
+        if (TSum >= target)
+            --right;
+        else
+        {
+            maxSum = max(TSum, maxSum);
+            ++left;
+        }
+    }
+    return maxSum;
+}
+
+int CountTripletswithSmallerSum(vector<int> nums, int target)
+{
+    int nTPz = 0;
+    sort(nums.begin(), nums.end());
+
+    for (int i = 0; i < nums.size() - 2; i++)
+    {
+        int left = i + 1;
+        int right = nums.size() - 1;
+        const int SubTar = target - nums[i];
+
+        while (left < right)
+        {
+            const int TSum = nums[left] + nums[right];
+            if (TSum >= SubTar)
+                --right;
+            else
+            {
+                /*
+                * Since we have a sorted array & we found a value at 'right' for which a sum with value at 'Left' will smaller than SubTar
+                * Therefore the pair sum of all the element below the 'right' upto 'left' will also have smaller than the SubTar
+                * including the current one so we are saved from back-iterating
+                */
+                nTPz += right - left;
+                ++left;
+            }
+        }
+    }
+
+    return nTPz;
+}
+
+vector<vector<int>> GetTripletswithSmallerSum(vector<int> nums, int target)
+{
+    vector<vector<int>> res;
+    return res;
+}
+
+// Very slow while using the 2ptr approach, we should use sliding window
+int numSubarrayProductLessThanK_2Ptr(vector<int>& nums, int k)
+{
+    int nMulPirs = 0;
+    //std::sort(nums.begin(), nums.end());
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        int j = i + 1;
+        int mulPir = 1;
+
+        while (nums[i] * mulPir < k)
+        {
+            ++nMulPirs;
+
+            if (j < nums.size())
+                mulPir *= nums[j++];
+            else    break;
+        }
+    }
+    return nMulPirs;
+}
+
+// The sliding window approach
+int numSubarrayProductLessThanK_wrong(vector<int>& nums, int k)
+{
+    int wStart = 0, wEnd = 0;
+    int subPro = 1, nPrds = 0;
+
+    // for full array
+        // add new element at wEnd
+        // while condition not matches
+            // remove element at wStart from window
+        // here we have condition satisfied & optimal result for this window
+        // update the main-result
+
+    for (; wEnd < nums.size(); wEnd++)
+    {
+        if(nums[wEnd] != 1)
+            subPro *= nums[wEnd];
+
+        while (subPro >= k && wStart <= wEnd)
+        {
+            const int vStart = nums[wStart];
+            if(vStart < k) // or wStart < wEnd-1
+                ++nPrds;
+
+            if(vStart != 1)
+                subPro /= vStart;
+            ++wStart;
+        }
+
+        if (wStart <= wEnd)
+            ++nPrds;
+    }
+
+    while (wStart < wEnd)
+    {
+        ++nPrds;    ++wStart;
+    }
+
+    return nPrds;
+}
+
+// Solved with sliding window since it IS a sliding window problem
+int numSubarrayProductLessThanK(const vector<int>& nums, int k)
+{
+    int nSSPanserDivisions = 0, crntPrdc = 1;
+    int wStart = 0, wEnd = 0;
+
+    for (; wEnd < nums.size(); wEnd++)
+    {
+        crntPrdc *= nums[wEnd];
+
+        while (crntPrdc >= k)
+        {
+            crntPrdc /= nums[wStart];
+            if (wStart++ == wEnd)
+                break;
+        }
+
+        nSSPanserDivisions += (wEnd - wStart + 1);
+    }
+
+    return nSSPanserDivisions;
+}
+
+vector<vector<int>> findSubarrays_ProductLessThanK(const vector<int>& arr, int target)
+{
+    vector<vector<int>> res;
+    int wStart = 0, wEnd = 0, crntPrdc = 1;
+    auto GetCombinations = [&]()
+    {
+        for (int wCrnt = wEnd; wCrnt >= wStart; wCrnt--)
+        {
+            res.emplace_back(vector<int>(arr.begin() + wCrnt, arr.begin() + wEnd + 1));
+        }
+    };
+
+    for (; wEnd < arr.size(); wEnd++)
+    {
+        crntPrdc *= arr[wEnd];
+
+        while (crntPrdc >= target)
+        {
+            crntPrdc /= arr[wStart];
+            if (wStart++ == wEnd)
+                break;
+        }
+
+        GetCombinations();
+    }
+
+    return res;
+}
+
+void DutchNationalFlag(vector<int>& nums)
+{
+    auto SortByDigit = [&nums](const int digi, int& startPos)
+    {
+        for (int crntPos = startPos; crntPos < nums.size(); crntPos++)
+        {
+            if (nums[crntPos] == digi)
+            {
+                int tmp = nums[startPos];
+                nums[startPos] = nums[crntPos];
+                nums[crntPos] = tmp;
+                ++startPos;
+            }
+        }
+    };
+
+    int crntPos = 0;
+    SortByDigit(0, crntPos);
+    SortByDigit(1, crntPos);
+}
+
+vector<vector<int>> fourSum(vector<int>& nums, int target) 
+{
+    vector<vector<int>> res;
+
+    std::sort(nums.begin(), nums.end());
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        int subTar = target - nums[i];
+        for (int j = i + 1; j < nums.size(); j++)
+        {
+            int subTarJr = subTar - nums[j];
+
+            int left = j + 1, right = nums.size() - 1;
+
+            while (left < right)
+            {
+                int tmpSum = nums[left] + nums[right];
+
+                if (tmpSum < subTarJr)          ++left;
+                else if (tmpSum > subTarJr)     --right;
+                else                            
+                    res.push_back({ nums[i], nums[j], nums[left++], nums[right--] });
+            }
+        }
+    }
+
+    return res;
+}
+
 void testTwoPointers()
 {
-    /*auto x = TargetSumTwoPtr({1, 2, 3, 4, 7}, 6);
-    //                  0,1,2,3,4,5,6,7, 8, 9, 10
     vector<int> vec = { 1,2,3,3,4,4,4,10,20,20,99 };
+    /*auto x = TargetSumTwoPtr({1, 2, 3, 4, 7}, 6);
+    //                  0,1,2,3,4,5,6,7, 8, 9, 10    
     RemoveDuplicates(vec);
 
-    auto x = SquareOfSortedArray({ -3,-1,0,1,2 });
+    *//*auto x = SquareOfSortedArray({-3,-1,0,1,2});
     auto x = SquareOfSortedArray({ -8,-4,-2,-1,0 });
     auto x = SquareOfSortedArray({ 1, 8, 9, 17, 22, 85 });
     auto x = SquareOfSortedArray({ -2,-1,0,2,3 });
@@ -276,5 +687,78 @@ void testTwoPointers()
     arr = { 1,2,3,4,4,5 };
     ConsecutiveSubsequencesOfThree(arr);
     arr = { 1,2,3,4,6,7,8,9,10,11 };
-    ConsecutiveSubsequencesOfThree(arr);*/
+    ConsecutiveSubsequencesOfThree(arr);
+
+    Solution s;
+    vector<int> v = { -4,-1,0,3,10 };
+    s.sortedSquares(v);
+
+    vector<vector<int>> vVec;
+    //v = { 1,2,-2,-1 };
+    v = { -1,0,1,2,-1,-4 };
+    vVec = threeSumToZero(v);
+
+    vec = { -1,2,1,-4 };
+    threeSumClosest(vec, 1);
+    vec = { 0,0,0 };
+    threeSumClosest(vec, 1);
+    vec = { -2, 0, 1, 2 };
+    threeSumClosest(vec, 2);
+    vec = { -3, -1, 1, 2 };
+    threeSumClosest(vec, 1);
+    vec = { 1, 0, 1, 1 };
+    threeSumClosest(vec, 100);
+    vec = { 1, 2, 3, 4, -5 };
+    threeSumClosest(vec, 10);
+    vec = { 1, 1, 1, 0 };
+    threeSumClosest(vec, -100);
+
+    vec = { 30, 20, 50 };
+    MaxTwoSumSamallerThanTarget(vec, 70);
+    vec = { 5, 20, 110, 100, 10 };
+    MaxTwoSumSamallerThanTarget(vec, 85);
+    vec = { 34,23,1,24,75,33,54,8 };
+    MaxTwoSumSamallerThanTarget(vec, 60);
+    vec = { 10,20,30 };
+    MaxTwoSumSamallerThanTarget(vec, 15);
+
+    vec = { 5, 1, 3, 4, 7 };
+    CountTripletswithSmallerSum(vec, 12);
+    vec = { -1, 4, 2, 1, 3 };
+    CountTripletswithSmallerSum(vec, 5);
+    vec = { -2,0,1,3 };
+    CountTripletswithSmallerSum(vec, 2);
+
+    vec = { 10,5,2,6 };
+    numSubarrayProductLessThanK(vec, 100);//8
+    vec = { 1,2,3 };
+    numSubarrayProductLessThanK(vec, 0);
+    vec = { 2, 5, 3, 10 };
+    numSubarrayProductLessThanK(vec, 30);//6
+    vec = { 8, 2, 6, 5 };
+    numSubarrayProductLessThanK(vec, 50);//7
+
+    vec = { 10,9,10,4,3,8,3,3,6,2,10,10,9,3 };
+    numSubarrayProductLessThanK(vec, 19);
+
+    vec = { 10,5,2,6 };
+    auto x = findSubarrays_ProductLessThanK(vec, 100);//8
+    vec = { 1,2,3 };
+    x = findSubarrays_ProductLessThanK(vec, 0);
+    vec = { 2, 5, 3, 10 };
+    x = findSubarrays_ProductLessThanK(vec, 30);//6
+    vec = { 8, 2, 6, 5 };
+    x = findSubarrays_ProductLessThanK(vec, 50);//7
+
+    vec = { 10,9,10,4,3,8,3,3,6,2,10,10,9,3 };
+    x = findSubarrays_ProductLessThanK(vec, 19);*/
+
+    vec = { 4, 1, 2, -1, 1, -3 };
+    auto x = fourSum(vec, 1);
+    vec = { 2, 0, -1, 1, -2, 2 };   // -2 -1 0 1 2 2
+    x = fourSum(vec, 2);
+    vec = { 1,0,-1,0,-2,2 };
+    x = fourSum(vec, 0);
+    vec = { 2,2,2,2,2 };
+    x = fourSum(vec, 8);
 }

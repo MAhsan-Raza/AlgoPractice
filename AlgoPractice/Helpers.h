@@ -1,16 +1,16 @@
 #pragma once
 
 template <class T>
-struct ListNode {
+struct ListNodeT {
 	T val;
-	ListNode* next;
-	ListNode() : val(0), next(nullptr) {}
-	ListNode(T x) : val(x), next(nullptr) {}
-	ListNode(T x, ListNode* next) : val(x), next(next) {}
+	ListNodeT* next;
+	ListNodeT() : val(0), next(nullptr) {}
+	ListNodeT(T x) : val(x), next(nullptr) {}
+	ListNodeT(T x, ListNodeT* next) : val(x), next(next) {}
 
 	void Print()
 	{
-		ListNode* tmp = this;
+		ListNodeT* tmp = this;
 		cout << endl;
 		while (tmp)
 		{
@@ -21,7 +21,28 @@ struct ListNode {
 	}
 };
 
-using IListNode = ListNode<int>;
+using IListNode = ListNodeT<int>;
+using ListNode = ListNodeT<int>;
+
+ListNode* CreateLL(const vector<int> vec)
+{
+	ListNode *head = nullptr, *crnt = nullptr;
+
+	for (int x : vec)
+	{
+		if (!head)
+		{
+			head = crnt = new ListNode(x);
+		}
+		else
+		{
+			crnt->next = new ListNode(x);
+			crnt = crnt->next;
+		}
+	}
+
+	return head;
+}
 
 template <typename T>
 void PrintVecOfVec(const vector<vector<T>>& vOv, const string& sep = "\n")
@@ -41,6 +62,26 @@ void PrintVec(const vector<T>& v)
     for (auto& x : v)
         cout << x << " ";
     cout << endl;
+}
+
+template<typename T>
+void PrintLL(ListNodeT<T>* head)
+{
+	while (head) {
+		cout << head->val << " - ";
+		head = head->next;
+	}
+	cout << "NULL" << endl;
+}
+
+void PrintCompareLL(ListNode* head, function<void(ListNode*)> func)
+{
+	cout << "Input:-  ";
+	PrintLL(head);
+	func(head);
+	cout << "Output:- ";
+	PrintLL(head);
+	cout << endl;
 }
 
 void SwapInString(string& str, const int i1, const int i2)

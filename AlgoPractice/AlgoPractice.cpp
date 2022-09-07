@@ -17,14 +17,14 @@
 using namespace std;
 
 #include "Helpers.h"
-#include "SlidingWindow.h"
-/*#include "Sorting.h"
+/*#include "SlidingWindow.h"
+#include "Sorting.h"
 #include "TwoPointers.h"
 #include "FastNSlowPointer.h"
 #include "NumberTheory.h"
-#include "IntervalsScheduling.h"
+#include "IntervalsScheduling.h"*/
 #include "InplaceLinkListReversal.h"
-#include "BTreeDFS.h"
+/*#include "BTreeDFS.h"
 #include "BTreeLevelOrderTrv-BFS.h"
 #include "CyclicSort.h"
 #include "MedianOfStream.h"
@@ -38,14 +38,14 @@ using namespace std;
 
 int main()
 {
-    testSlidingWindow();
-    /*testSorting();
+    /*testSlidingWindow();
+    testSorting();
     testTwoPointers();
     testFastSlowPointers();
     testNumberTheory();
-    testIntervalScheduling();
+    testIntervalScheduling();*/
     testInplaceLinkedListReversal();
-    testBTree();
+    /*testBTree();
     BTreeLevelOrderTrv_BFS();
     testCyclicSort();
     testStreamMedian();
