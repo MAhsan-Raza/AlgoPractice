@@ -828,127 +828,13 @@ string minSubstrContainingAllTargetChars(const string& s, const string& t)
 	return s.substr(minStrtPos, minCnt);
 }
 
-// This is a bit different from leetcode
-vector<int> WordConcenteration(const string& str, const vector<string>& words)
-{
-	vector<int> res;
-	if (str.empty() || words.empty())		return res;
-	unordered_map<int, string> hashWords;
-
-	int wStart = 0, wEnd = 0;
-
-	auto calcSimpleHash = [](const string& s)->int 
-	{
-		int smplHash = 0;
-		for_each(s.begin(), s.end(), [&smplHash](const char c) {	smplHash += c;	});
-		return smplHash;
-	};
-
-	auto slideTheWnd = [&](int& crntHash)->bool
-	{
-		if(++wEnd < str.size())
-		{ 
-			crntHash -= str[wStart++];
-			crntHash += str[wEnd];
-			return true;
-		}
-		return false;
-	};
-
-	std::for_each(words.begin(), words.end(), [&](const string s) {
-		hashWords.emplace(calcSimpleHash(s), s);
-		});
-
-	int wordSize = words.begin()->size();
-	wEnd = wordSize - 1;
-	if (str.size() < wordSize)		return res;
-
-	//Calculating initial window
-	int crntHash = calcSimpleHash(str.substr(0, wordSize));
-
-	while(wEnd < str.size())
-	{ 
-		auto crntHashWords = hashWords;
-		int tmpWndS = wStart, tmpHash = crntHash;
-		unordered_map<int, string>::const_iterator cItr;
-		while((cItr = crntHashWords.find(tmpHash)) != crntHashWords.end())
-		{ 
-			crntHashWords.erase(cItr);
-			if (crntHashWords.empty())
-			{
-				res.push_back(wStart);
-				break;
-			}
-
-			tmpWndS += wordSize;
-			if (tmpWndS + wordSize > str.size())	break;
-			tmpHash = calcSimpleHash(str.substr(tmpWndS, wordSize));
-		}
-
-		if (false == slideTheWnd(crntHash))		break;
-	}
-
-	return res;
-}
-
-
-// This is a bit different from leetcode
-vector<int> WordConcenteration_Faster(const string& str, const vector<string>& words)
-{
-	vector<int> res;
-	if (str.empty() || words.empty())		return res;
-	int wStart = 0, wEnd = words.begin()->size();
-
-	vector<int> hashSubStrs;
-	unordered_map<int, string> hashWords;
-
-	auto calcSimpleHash = [](const string& s)->int
-	{
-		int smplHash = 0;
-		for_each(s.begin(), s.end(), [&smplHash](const char c) {	smplHash += c;	});
-		return smplHash;
-	};
-
-	auto slideTheWnd = [&](int& crntHash)->bool
-	{
-		if (++wEnd < str.size())
-		{
-			crntHash -= str[wStart++];
-			crntHash += str[wEnd];
-			return true;
-		}
-		return false;
-	};
-
-	for_each(words.begin(), words.end(), [&hashWords, calcSimpleHash](const string& s) {	hashWords.emplace(calcSimpleHash(s), s);	});
-
-	int wordSize = words.begin()->size();
-	wEnd = wordSize - 1;
-	if (str.size() < wordSize)		return res;
-
-	//Calculating initial window
-	int crntHash = calcSimpleHash(str.substr(0, wordSize));
-
-	while (wEnd < str.size())
-	{
-		hashSubStrs.push_back(crntHash);
-		if (false == slideTheWnd(crntHash))		break;
-	}
-
-	for (int i = 0; i < hashSubStrs.size();)
-	{
-		//while()
-		++i;
-	}
-}
-
 void testSlidingWindow()
 {
-	/*SlidingWindow sw;
+	SlidingWindow sw;
 	vector<int> res;
 	string sres = "";
 
-	cout << sw.MaxOfSubArrays(3, {1, -5, 7, 4, 11, -20}) << endl;
+	/*cout << sw.MaxOfSubArrays(3, {1, -5, 7, 4, 11, -20}) << endl;
 	sw.testFixedLenWndWithLambda();
 	cout << sw.MaxAvgOfSubArrays(3, { 1, -5, 7, 4, 11, -20 }) << endl;
 	sw.MinLenEqGtrK({ 1, 5, 8, 4, 12 }, 12);
@@ -1018,7 +904,7 @@ void testSlidingWindow()
 	checkInclusion("", "");
 
 	res = findAllAnagrams("cbaebabacd", "abc");
-	res = findAllAnagrams("abab", "ab");
+	res = findAllAnagrams("abab", "ab");*/
 
 	sres = minSubstrContainingAllTargetChars("aabdec", "abc");
 	sres = minSubstrContainingAllTargetChars("aabdec", "abac");
@@ -1027,10 +913,5 @@ void testSlidingWindow()
 	sres = minSubstrContainingAllTargetChars("ADOBECODEBANC", "ABC");
 	sres = minSubstrContainingAllTargetChars("a", "a");
 	sres = minSubstrContainingAllTargetChars("a", "aa");
-	sres = minSubstrContainingAllTargetChars("cabwefgewcwaefgcf", "cae");*/
-
-	auto x = WordConcenteration_Faster("catfoxcat", { "cat", "fox" });
-	x = WordConcenteration_Faster("catcatfoxfox", { "cat", "fox" });
-
-	//------->Place a lamp post to cover max points on a road, from -X axis to +X<--------------------------------------------------------------------
+	sres = minSubstrContainingAllTargetChars("cabwefgewcwaefgcf", "cae");
 }

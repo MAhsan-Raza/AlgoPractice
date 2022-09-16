@@ -151,6 +151,7 @@
     <ClInclude Include="DivideAndConquer.h" />
     <ClInclude Include="FastNSlowPointer.h" />
     <ClInclude Include="BTreeDFS.h" />
+    <ClInclude Include="Hashtables.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="InplaceLinkListReversal.h" />
     <ClInclude Include="IntervalsScheduling.h" />

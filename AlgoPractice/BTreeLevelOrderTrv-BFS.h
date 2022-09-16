@@ -83,20 +83,150 @@ vector<vector<int>> zigzagLevelOrder(BTreeNode* root)
 	return res;
 }
 
+TreeNode* findSuccessor_LevelOrder(TreeNode* root, int key)
+{
+	if (!root)	return nullptr;
+
+	queue<TreeNode*> qMain, qSide;
+	qSide.push(root);
+	bool returnNext = false;
+
+	while (!qMain.empty() || !qSide.empty())
+	{
+		if (qMain.empty())
+			qMain.swap(qSide);
+
+		TreeNode* crnt = qMain.front();
+		qMain.pop();
+
+		if (returnNext)
+			return crnt;
+		else if (crnt->val == key)
+			returnNext = true;
+
+		if (crnt->left)			qSide.push(crnt->left);
+		if (crnt->right)		qSide.push(crnt->right);
+	}
+
+	return nullptr;
+}
+
+
+Node* connectSiblings(Node* root)
+{
+	queue<Node*> qMain, qSide;
+	if (root) qSide.push(root);
+	Node* prevToConn = nullptr;
+
+	while (!qMain.empty() || !qSide.empty())
+	{
+		if (qMain.empty())
+		{
+			prevToConn = nullptr;
+			qMain.swap(qSide);
+		}
+
+		Node* crnt = qMain.front();
+		qMain.pop();
+
+		if (prevToConn)  prevToConn->next = crnt;
+		prevToConn = crnt;
+
+		if (crnt->left)          qSide.push(crnt->left);
+		if (crnt->right)         qSide.push(crnt->right);
+	}
+
+	return root;
+}
+
 void BTreeLevelOrderTrv_BFS()
 {
-	BTreeNode* head =
-		new BTreeNode(3,
-			new BTreeNode(9,
-				new BTreeNode(11),
-				new BTreeNode(30)
+	/*BTreeNode* head =
+		new BTreeNode(1,
+			new BTreeNode(2,
+				new BTreeNode(4),
+				new BTreeNode(5)
 			),
-			new BTreeNode(20,
-				new BTreeNode(15),
-				nullptr
-			)
+			new BTreeNode(3)
 		);
-	/*printBFS(head);
+	printBFS(head);
 	retrieveBFS(head);
-	auto x = zigzagLevelOrder(head);*/
+	auto x = zigzagLevelOrder(head);
+
+	findSuccessor_LevelOrder(new TreeNode(1,
+		new TreeNode(2,
+			new TreeNode(4),
+			new TreeNode(5)
+		),
+		new TreeNode(3)
+	), 3)->val;
+
+	findSuccessor_LevelOrder(new TreeNode(12,
+		new TreeNode(7,
+			new TreeNode(9),
+			nullptr
+		),
+		new TreeNode(1,
+			new TreeNode(10),
+			new TreeNode(5)
+		)
+	), 9)->val;
+
+	findSuccessor_LevelOrder(new TreeNode(12,
+		new TreeNode(7,
+			new TreeNode(9),
+			nullptr
+		),
+		new TreeNode(1,
+			new TreeNode(10),
+			new TreeNode(5)
+		)
+	), 12)->val;
+
+	findSuccessor_LevelOrder(new TreeNode(20,
+		new TreeNode(10,
+			new TreeNode(4),
+			new TreeNode(18,
+				new TreeNode(14,
+					new TreeNode(13),
+					new TreeNode(15)
+				),
+				new TreeNode(19)
+			)
+		),
+		new TreeNode(26,
+			new TreeNode(24),
+			new TreeNode(27)
+		)
+	), 24)->val;
+
+	findSuccessor_LevelOrder(new TreeNode(20,
+		new TreeNode(10,
+			new TreeNode(4),
+			new TreeNode(18,
+				new TreeNode(14,
+					new TreeNode(13),
+					new TreeNode(15)
+				),
+				new TreeNode(19)
+			)
+		),
+		new TreeNode(26,
+			new TreeNode(24),
+			new TreeNode(27)
+		)
+	), 4)->val;*/
+
+	/*
+	* https://leetcode.com/problems/boundary-of-binary-tree/
+	* https://leetcode.com/problems/time-needed-to-inform-all-employees/
+	* https://leetcode.com/problems/unique-binary-search-trees/
+	* https://leetcode.com/problems/count-univalue-subtrees/
+	* https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/
+	* https://leetcode.com/problems/find-nearest-right-node-in-binary-tree/
+	* https://leetcode.com/problems/count-nodes-with-the-highest-score/
+	* https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+	* https://leetcode.com/problems/cousins-in-binary-tree/
+	* https://leetcode.com/problems/the-time-when-the-network-becomes-idle/
+	*/
 }
