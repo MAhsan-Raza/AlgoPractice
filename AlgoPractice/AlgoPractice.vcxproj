@@ -144,21 +144,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BSearch.h" />
-    <ClInclude Include="BSTree.h" />
+    <ClInclude Include="BSearchTree.h" />
     <ClInclude Include="BTreeLevelOrderTrv-BFS.h" />
     <ClInclude Include="CombsAndPermuts.h" />
     <ClInclude Include="CyclicSort.h" />
     <ClInclude Include="DivideAndConquer.h" />
     <ClInclude Include="FastNSlowPointer.h" />
     <ClInclude Include="BTreeDFS.h" />
+    <ClInclude Include="Fibonacci.h" />
+    <ClInclude Include="GreedyAlgos.h" />
     <ClInclude Include="Hashtables.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="InplaceLinkListReversal.h" />
     <ClInclude Include="IntervalsScheduling.h" />
+    <ClInclude Include="Knapsack.h" />
     <ClInclude Include="KSortedLists.h" />
+    <ClInclude Include="LongestCommonSubString.h" />
     <ClInclude Include="MedianOfStream.h" />
     <ClInclude Include="MISC.h" />
     <ClInclude Include="NumberTheory.h" />
+    <ClInclude Include="PalindromeSubseq.h" />
     <ClInclude Include="SlidingWindow.h" />
     <ClInclude Include="Sorting.h" />
     <ClInclude Include="Subsets.h" />

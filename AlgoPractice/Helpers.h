@@ -92,3 +92,16 @@ void SwapInString(string& str, const int i1, const int i2)
     str[i1] = str[i2];
     str[i2] = tmp;
 }
+
+
+template<typename T>
+struct HashPair
+{
+	unsigned int operator()(const pair<T, T>& pr) const
+	{
+		auto hashA = hash<T>{}(pr.first);
+		auto hashB = hash<T>{}(pr.second);
+
+		return (hashA == hashB) ? hashA : hashA ^ hashB;
+	}
+};

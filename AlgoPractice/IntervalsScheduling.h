@@ -1,6 +1,6 @@
 #pragma once
 
-enum class IntervalRelations
+/*enum class IntervalRelations
 {
 	A_ENDS_IN_B = 0,	//but A doesn't starts inside B
 	A_ISOVERLAPPING_B,	//
@@ -129,10 +129,78 @@ vector<vector<int>> IntervalIntersection(const vector<vector<int>>& v1, const ve
     }
 
     return res;
+}*/
+
+inline vector<vector<int>> mergeLeetCode(vector<vector<int>>& intervals)
+{
+    vector<vector<int>> res;
+
+    std::sort(intervals.begin(), intervals.end(), [](const vector<int>& A, const vector<int>& B) { return A[0] < B[0]; });
+
+    auto IsNewInterval = [](const int crntEnd, const int newStart)->bool { return crntEnd < newStart; };
+
+    auto IsFullyOverlapped = [](const int crntEnd, const int newEnd)->bool { return newEnd <= crntEnd; };
+
+    vector<int> crntIv = intervals.front();
+
+    for (int i = 1; i < intervals.size(); i++)
+    {
+        vector<int>& newIv = intervals[i];
+        if (IsNewInterval(crntIv[1], newIv[0]))
+        {
+            res.push_back(crntIv);
+            crntIv = newIv;
+        }
+        else
+            crntIv[1] = max(crntIv[1], newIv[1]);
+        /*if ( IsFullyOverlapped(crntIv[1], newIv[1]) )
+        continue;
+    else
+    {
+        crntIv[1] = newIv[1];
+    }*/
+    }
+    res.push_back(crntIv);
+
+    return std::move(res);
+}
+
+/*vector<vector<int>> InsertITV(const vector<vector<int>>& itvz, const vector<int>& nwItv)
+{
+    vector<vector<int>> res;
+
+    for(int i=0; i<
+
+    return res;
+}*/
+
+void getmaxsum(int n, vector<int> arr, int i, int sum, int& maxsum)
+{
+    if (i >=  n)
+    {
+        maxsum = max(maxsum, sum);
+    }
+    else
+    {
+        sum += arr[i];
+        for(int j=i+2; j<n; j+=2)
+            getmaxsum(n, arr, j, sum, maxsum);
+    }
+    maxsum = max(maxsum, sum);
+}
+
+int maxPizza(int n, vector<int> arr)
+{
+    int maxsum = INT_MIN, sum = 0;
+
+    getmaxsum(n, arr, 0, sum, maxsum);
+    return maxsum;
 }
 
 void testIntervalScheduling()
 {
+    maxPizza(5, { 1,2,3,4,5 });
+
     /*vector<vector<int>> x = {{2,6}, {1,3}, {8,10}, {15,18}};
     PrintVecOfVec(x, "-> ");
     auto res = mergeLeetCode(x);
@@ -146,6 +214,19 @@ void testIntervalScheduling()
     x = { {1, 3},{6, 9} };
     PrintVecOfVec(insertInterval(x, { 4, 7 }), "-> ");
     x = { {1, 3},{6, 9} };
-    PrintVecOfVec(insertInterval(x, { 2, 4 }), "-> ");*/
-    IntervalIntersection({ {0,2}, {5,10}, {13,23}, {24,25} }, { {1,5}, {8,12}, {15,24}, {25,26 } });
+    PrintVecOfVec(insertInterval(x, { 2, 4 }), "-> ");
+    //IntervalIntersection({ {0,2}, {5,10}, {13,23}, {24,25} }, { {1,5}, {8,12}, {15,24}, {25,26 } });*/
+
+    vector<vector<int>> ITVz = { {1, 2}, { 3, 5}, { 6, 7}, { 8, 10 }, { 12, 16 } };
+
+
+    /*
+    * https://leetcode.com/problems/insert-interval/
+    * https://leetcode.com/problems/meeting-rooms/
+    * https://leetcode.com/problems/meeting-rooms-ii/
+    * https://leetcode.com/problems/teemo-attacking/
+    * https://leetcode.com/problems/add-bold-tag-in-string/
+    * https://leetcode.com/problems/partition-labels/
+    * https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/
+    */
 }

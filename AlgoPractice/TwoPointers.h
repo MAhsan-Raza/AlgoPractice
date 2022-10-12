@@ -658,6 +658,33 @@ vector<vector<int>> fourSum(vector<int>& nums, int target)
     return res;
 }
 
+//can have a valid PALI after removing just one char?
+bool validPalindrome(string s)
+{
+    int left = 0;
+    int right = s.size() - 1;
+
+    function<bool(int, int)> IsSubPalinm = [&s](int l, int r)->bool
+    {
+        while (l < r)
+        {
+            if (s[l++] != s[r--])
+                return false;
+        }
+        return true;
+    };
+
+    while (left < right)
+    {
+        if (s[left] != s[right])
+            return IsSubPalinm(left + 1, right) || IsSubPalinm(left, right - 1);
+
+        ++left;
+        --right;
+    }
+    return true;
+}
+
 void testTwoPointers()
 {
     vector<int> vec = { 1,2,3,3,4,4,4,10,20,20,99 };
@@ -751,7 +778,7 @@ void testTwoPointers()
     x = findSubarrays_ProductLessThanK(vec, 50);//7
 
     vec = { 10,9,10,4,3,8,3,3,6,2,10,10,9,3 };
-    x = findSubarrays_ProductLessThanK(vec, 19);*/
+    x = findSubarrays_ProductLessThanK(vec, 19);
 
     vec = { 4, 1, 2, -1, 1, -3 };
     auto x = fourSum(vec, 1);
@@ -760,5 +787,7 @@ void testTwoPointers()
     vec = { 1,0,-1,0,-2,2 };
     x = fourSum(vec, 0);
     vec = { 2,2,2,2,2 };
-    x = fourSum(vec, 8);
+    x = fourSum(vec, 8);*/
+
+    validPalindrome("acxcybycxcxa");
 }
