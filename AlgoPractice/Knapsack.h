@@ -3,62 +3,29 @@
 
 int FruitBasket(const vector<int>& weights, const vector<int>& profits, const int capacity)
 {
-	int REC_CALLS_NODPRO = 0;
-	function<void(const int, const int, const int, int&)> getMaxPOld = [&](const int indx, const int profit, const int weight, int& maxProfit)
+	vector<vector<int>> memChc(weights.size(), vector(capacity + 1, -1));
+	function<int(const int, const int)> getMaxP = [&](const int indx, const int crntCap)->int
 	{
-		++REC_CALLS_NODPRO;
-
-		if (indx == weights.size() || weight > capacity)
-		{
-			maxProfit = max(maxProfit, (weight > capacity) ? profit - profits[indx - 1] : profit);
-		}
-		else
-		{
-			getMaxPOld(indx + 1, profit + profits[indx], weight + weights[indx], maxProfit);
-			getMaxPOld(indx + 1, profit , weight , maxProfit);
-		}
-	};
-
-	int REC_CALLS = 0;
-	//vector<vector<int>> memoTbl(weights.size(), vector(capacity + 1, -1));
-	unordered_map<pair<int, int>, int, HashPair<int>> memoTbl;
-	function<int(const int, const int, const int)> getMaxP = [&](const int indx, const int profit, const int crntCap)->int
-	{
-		++REC_CALLS;
-
-		if (0 > crntCap)
+		if (indx == weights.size())
 			return 0;
-		else if (indx == weights.size())
-			return profit;
-		
-		auto itr = memoTbl.find(make_pair(indx, crntCap));
-		if (itr != memoTbl.end())
-			return itr->second;
-		//if (memoTbl[indx][crntCap] != -1)
-			//return memoTbl[indx][crntCap];
 
-		int crntMaxP = 
-			max(
-				getMaxP(indx + 1, profit + profits[indx], crntCap - weights[indx]),
-				getMaxP(indx + 1, profit, crntCap)
-			);
-		//memoTbl[indx][crntCap] = crntMaxP;
-		memoTbl[make_pair(indx, crntCap)] = crntMaxP;
-		return crntMaxP;
+		if (memChc[indx][crntCap] == -1)
+		{
+			if (weights[indx] <= crntCap)
+				memChc[indx][crntCap] = profits[indx] + getMaxP(indx + 1, crntCap - weights[indx]);
+			memChc[indx][crntCap] = max(memChc[indx][crntCap], getMaxP(indx + 1, crntCap));
+		}
+
+		return memChc[indx][crntCap];
 	};
 
-	int maxRes = 0;
-	getMaxPOld(0, 0, 0, maxRes);
-
-	return getMaxP(0, 0, capacity);
+	return getMaxP(0, capacity);
 }
 
 // Can partition the whole array into two subsets having equal SUM
 bool canPartition(const vector<int>& nums)
 {
-	int RCV_CLS = 0;
-	int CAC_HIT = 0;
-
+	int RCV_CLS = 0, CAC_HIT = 0;
 	int ArrSum = 0;
 	for_each(nums.begin(), nums.end(), [&ArrSum](const int x) { ArrSum += x; });
 
@@ -86,7 +53,7 @@ bool canPartition(const vector<int>& nums)
 
 
 // Constraints:- num.size > 0 AND sum > 0
-bool hasSubsetEqualTargetSum(const vector<int>& num, int sum)
+bool hasSubsetEqualTargetSum_(const vector<int>& num, int sum)
 {
 	vector<vector<int>> memChc(num.size(), vector<int>(sum + 1, -1));
 	function<bool(int, int)> haSsS = [&](const int indx, const int crntSum)->bool
@@ -103,23 +70,102 @@ bool hasSubsetEqualTargetSum(const vector<int>& num, int sum)
 	return haSsS(0, sum);
 }
 
+// Constraints:- num.size > 0 AND sum > 0
+bool hasSubsetEqualTargetSum(const vector<int>& nums, const int sum)
+{
+	vector<vector<int>> memChc(nums.size(), vector<int>(sum + 1, -1));
+
+	function<bool(int, int)> haSsS = [&](const int indx, const int remSum)->bool
+	{
+		if (indx == nums.size())	
+			return false;
+
+		if (memChc[indx][remSum] == -1)
+		{
+			memChc[indx][remSum] = false;	// Remember that -1 is also a TRUE in C++
+
+			if (remSum == nums[indx])
+				memChc[indx][remSum] = true;
+			else
+			{
+				if (remSum > nums[indx])	// If smaller then remSum the both cases are possible but if greater only Skip case is
+					memChc[indx][remSum] = haSsS(indx + 1, remSum - nums[indx]);	//Pick
+
+				memChc[indx][remSum] = memChc[indx][remSum] || haSsS(indx + 1, remSum);	// Or Skip
+			}
+		}
+
+		return memChc[indx][remSum];
+	};
+
+	return haSsS(0, sum);
+}
+
+/*
+	Instead of finding sum Max/Min we will have to check at each branch that
+		can we reach the end (make the remTrgt 0) ? then count those branches
+	Top/Down same as normal target sum but
+	Instead of Pck & Skp, branch on ADD or SUBTRACT
+*/
+struct HashPairInts
+{
+	size_t operator()(const pair<int, int>& pr) const
+	{
+		int h1 = hash<int>{}(pr.first);
+		int h2 = hash<int>{}(pr.second);
+
+		return (h1 == h2) ? h1 : h1 ^ h2;
+	}
+};
+
+/*
+You are given an integer array nums and an integer target.
+
+You want to build an expression out of nums by adding one of the symbols '+' and '-' before each integer in nums and then concatenate all the integers.
+
+For example, if nums = [2, 1], you can add a '+' before 2 and a '-' before 1 and concatenate them to build the expression "+2-1".
+Return the number of different expressions that you can build, which evaluates to target
+*/
+inline int findTargetSumWays(const vector<int>& nums, int target)
+{
+	unordered_map<pair<int, int>, int, HashPairInts> ht;
+
+	function<int(int, int)> getSumWays = [&](const int indx, const int remTrgt)->int
+	{
+		if (remTrgt == 0 && indx == nums.size())
+			return 1;   // Success base condition
+
+		if (indx == nums.size())
+			return 0;   // Failure base condition
+
+		auto pr = make_pair(indx, remTrgt);
+		auto itr = ht.find(pr);
+		if (itr == ht.end())
+		{
+			// Get sum of all the bellow sub-trees
+			int subRes = getSumWays(indx + 1, remTrgt - nums[indx]) + getSumWays(indx + 1, remTrgt + nums[indx]);
+			ht.emplace(pr, subRes);
+			return subRes;
+		}
+		else return itr->second;
+	};
+
+	return getSumWays(0, target);
+}
 
 // For positive numbers only, if we want to include negatives we will have to apply Divide & Conqour's Meet-in-Middle technique
 int minimumDifference(const vector<int>& nums)
 {
-	//int REV_CALLS = 0;
 	// get half sum
 	long ArrSum = 0;
 	for (int i = 0; i < nums.size(); i++)    ArrSum += nums[i];
 	long halfSum = ArrSum / 2;
 
-	//memo
 	vector<vector<long>> memChc(nums.size(), vector<long>(ArrSum + 1, -1));
 
 	// iterate all subset & take one with min abs diff from the half of sum
 	function<int(int, long)> GetCloserToTarget = [&](int indx, long crntSum)->int
 	{
-		//++REV_CALLS;
 		if (indx >= nums.size())             return crntSum;
 		if (memChc[indx][crntSum] != -1)     return memChc[indx][crntSum];
 
@@ -292,14 +338,19 @@ int maxProduct_RibbonAnyPieces(int total)
 	return 0;
 }
 
+
 void testKnapsack() 
 {
 	/*FruitBasket({ 2,3,1,4,20,30,10,40,99,91,71,55,5,6,7 }, { 4,5,3,7,7,1,2,3,11,7,4,33,2,3,4 }, 5);
+	FruitBasket({ 10,20,30 }, { 60,100,120 }, 50);
+	FruitBasket({ 1,1,1 }, { 10,20,30 }, 2);
+	FruitBasket({ 1,2,3 }, { 10,15,40 }, 2);
+	FruitBasket({ 1,2,3 }, { 10,15,40 }, 3);
 
 	canPartition({ 1,5,11,5 });
 	canPartition({ 14,9,8,4,3,2 });
 	canPartition({ 5,79,2,4,8,16,32,64,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100 });
-
+	
 	hasSubsetEqualTargetSum({ 1,5,11,5 }, 10);
 	hasSubsetEqualTargetSum({ 14,9,8,4,3,2 }, 11);
 	hasSubsetEqualTargetSum({ 1, 2, 3, 7 }, 6);
@@ -308,7 +359,10 @@ void testKnapsack()
 	hasSubsetEqualTargetSum({ 3, 34, 4, 12, 5, 2 }, 9);
 	hasSubsetEqualTargetSum({ 3, 34, 4, 12, 5, 2 }, 30);
 
-	minimumDifference({ 2,3,1,4,20,30,10,40,99,91,71,55,5,6,7 });
+	findTargetSumWays({ 1,1,1,1,1 }, 3);
+	findTargetSumWays({ 1 }, 1);
+*/
+	/*minimumDifference({2,3,1,4,20,30,10,40,99,91,71,55,5,6,7});
 	minimumDifference({ 3, 9, 7, 3 });
 	//minimumDifference({ 2, -1, 0, 4, -2, -9 });
 	minimumDifference({ 1, 2, 3, 9 });
@@ -348,10 +402,20 @@ void testKnapsack()
 	countRibbonPieces({1}, 2);
 	countRibbonPieces({1,2}, 3);*/
 
+
 	/*
 	* https://leetcode.com/problems/minimum-number-of-operations-to-convert-time/
 	* https://leetcode.com/problems/number-of-subsequences-that-satisfy-the-given-sum-condition/
 	* https://leetcode.com/problems/minimum-cost-for-tickets/
 	* https://leetcode.com/problems/maximum-value-of-k-coins-from-piles/
+	* https://leetcode.com/problems/partition-to-k-equal-sum-subsets/
+	* https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/
+	* https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/
+	* https://leetcode.com/problems/find-subarrays-with-equal-sum/
+	* https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/
+	* https://leetcode.com/problems/split-array-with-same-average/
+	* https://leetcode.com/problems/tallest-billboard/
+	* https://leetcode.com/problems/last-stone-weight-ii/
+	* https://leetcode.com/problems/count-subarrays-with-more-ones-than-zeros/
 	*/
 }

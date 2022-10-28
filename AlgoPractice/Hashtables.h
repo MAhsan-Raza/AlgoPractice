@@ -27,7 +27,28 @@ int CountSubarraysEqualSum(const vector<int>& nums, const int k)
 
 vector<vector<int>> AllSubarraysEqualSum(const vector<int>& nums, const int k)
 {}
+int need_to_carry(string s1, string s2) {
 
+    const int NPRCL_TYPS = 26;
+    vector<int> ht(NPRCL_TYPS, 0);
+
+    for (int i = 0; i < s1.size(); i++)
+        ht[s1[i] - 'a'] += 1;
+
+    for (int i = 0; i < s2.size(); i++)
+        ht[s2[i] - 'a'] -= 1;
+
+    int count = 0;
+    for (int i = 0; i < NPRCL_TYPS; i++)
+    {
+        if (ht[i] > 0)
+            count += ht[i];
+        else
+            count += abs(ht[i]);
+    }
+
+    return count;
+}
 void testHashtables()
 {
     /*

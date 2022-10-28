@@ -101,5 +101,17 @@
     <ClInclude Include="GreedyAlgos.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="XOR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphTheory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TopologicalSort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3D_Memoaization.h">
+      <Filter>DynamicProgramming</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

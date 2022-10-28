@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BTreeDFS.h"
+
 using BSTNode = struct _BSTNode {
 
 	int data;
@@ -80,7 +82,68 @@ void CompareTwoVecsSameLength(const vector<int>& res1, const vector<int>& res2)
     }
 }
 
-void testBSearchTree(const vector<int>& nums)
+/*
+    Traverse to the most suitable parent node
+        while position is empty & staisfy BST
+    insert at either left or right
+*/
+TreeNode* insertIntoBST(TreeNode* root, int val)
+{
+    if (nullptr == root) return new TreeNode(val);
+
+    TreeNode* crnt = root;
+
+    while (crnt)
+    {
+        if (val > crnt->val)
+        {
+            if (nullptr == crnt->right)
+            {
+                crnt->right = new TreeNode(val);
+                break;
+            }
+            else crnt = crnt->right;
+        }
+        else if (val < crnt->val)
+        {
+            if (nullptr == crnt->left)
+            {
+                crnt->left = new TreeNode(val);
+                break;
+            }
+            else crnt = crnt->left;
+        }
+        // no else since "It is guaranteed that the new value does not exist in the original BST."
+    }
+
+    return root;
+}
+
+int rangeSumBST(TreeNode* root, int low, int high)
+{
+    function<int(TreeNode*)> getSum = [&](TreeNode* const crnt)->int
+    {
+        if (nullptr == crnt)
+            return 0;
+
+        int sum = 0;
+        if (crnt->val >= low && crnt->val <= high)
+            sum += crnt->val;
+
+        if (crnt->val < low)
+            sum += getSum(crnt->right);
+        else if (crnt->val > high)
+            sum += getSum(crnt->left);
+        else
+            sum += (getSum(crnt->left) + getSum(crnt->right));
+
+        return sum;
+    };
+
+    return getSum(root);
+}
+
+void testBSearchTree_(const vector<int>& nums)
 {
     /*auto XRes = countSmaller_RedBlackTree({5,2,6,1});
     XRes = countSmaller_RedBlackTree({ 12, 1, 2, 3, 0, 11, 4 });
@@ -88,7 +151,7 @@ void testBSearchTree(const vector<int>& nums)
     XRes = countSmaller_RedBlackTree({ 1, 2, 3, 4, 5 });
     XRes = countSmaller_RedBlackTree({ -1 });
     XRes = countSmaller_RedBlackTree({ 1, -1 });
-    XRes = countSmaller_RedBlackTree({ -1, -1 });*/
+    XRes = countSmaller_RedBlackTree({ -1, -1 });
 
     
     int count = 5;
@@ -109,5 +172,72 @@ void testBSearchTree(const vector<int>& nums)
 
         //CompareTwoVecsSameLength(xBF, xRbT);
         //displayTwoTimeStamps(t1, t2, t3);
-    }
+    }*/
+
+
+}
+
+TreeNode* increasingBST(TreeNode* root)
+{
+    TreeNode* prevNode = nullptr;
+    function<TreeNode* (TreeNode*)> convToIBST = [&](TreeNode* const crnt)->TreeNode*
+    {
+        if (nullptr == crnt)
+            return root;
+
+        convToIBST(crnt->left);
+
+        if (nullptr == prevNode)
+            root = prevNode = crnt;
+        else
+        {
+            prevNode->right = crnt;
+            prevNode = crnt;
+        }
+
+        convToIBST(crnt->right);
+        crnt->left = nullptr;
+        return root;
+    };
+
+    return convToIBST(root);
+}
+
+void dfs(TreeNode* crnt)
+{
+    if (!crnt)return;
+    dfs(crnt->left);
+    cout << "Node:- [" << crnt->val << "], L[" << crnt->left << "], R[" << crnt->right << "]" << endl;
+    dfs(crnt->right);
+}
+
+void testBSearchTree()
+{
+    rangeSumBST(
+        new TreeNode(10,
+            new TreeNode(5,
+                new TreeNode(3),
+                new TreeNode(7)),
+            new TreeNode(15,
+                nullptr,
+                new TreeNode(18))
+        ),
+        7, 15
+    );
+
+    TreeNode* res = increasingBST(
+        new TreeNode(2, 
+            new TreeNode(1), 
+            new TreeNode(4,
+                new TreeNode(3), 
+                nullptr
+            )
+        )
+    );
+    
+
+    /*
+    * https://leetcode.com/problems/two-sum-iii-data-structure-design/
+    * https://leetcode.com/problems/two-sum-bsts/
+    */
 }

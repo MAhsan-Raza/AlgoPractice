@@ -380,5 +380,7 @@ void testBTree()
 
     /*
     * http://lixinchengdu.github.io/algorithmbook/leetcode/path-sum-iv.html
+    * https://leetcode.com/problems/find-elements-in-a-contaminated-binary-tree/
+    * https://leetcode.com/problems/reachable-nodes-with-restrictions/
     */
 }
